@@ -1,0 +1,42 @@
+{
+	"sarjataulukko": [
+		{ "nimi": "Are", "voitot": 0, "tasapelit": 0, "havio": 0, "pisteet": 0 },
+		{ "nimi": "Hege", "voitot": 0, "tasapelit": 0, "havio": 0, "pisteet": 0 },
+		{ "nimi": "Pedro", "voitot": 0, "tasapelit": 0, "havio": 0, "pisteet": 0 },
+		{ "nimi": "Löyläri", "voitot": 0, "tasapelit": 0, "havio": 0, "pisteet": 0 },
+		{ "nimi": "Joge", "voitot": 0, "tasapelit": 0, "havio": 0, "pisteet": 0 },
+		{ "nimi": "Venyniilo", "voitot": 0, "tasapelit": 0, "havio": 0, "pisteet": 0 }
+	],
+	"pelaajat": [
+		{ "nimi": "mussu", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "joge", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "vertti", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "radu", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "nico", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "tenho", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "hege", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "wiilis", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "pantsi", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "zzeit", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "paulus", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "pule", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "jerdad", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "vedi", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "are", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "löyly", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "lärvi", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "leevit", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "candle", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "hasse", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "jerpa", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "pedro", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "elmeri", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "plasen", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "veny", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "jake", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "joni", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "peksi", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "romu", "kill": 0, "death": 0, "assist": 0, "ratio": 0 },
+		{ "nimi": "oliver", "kill": 0, "death": 0, "assist": 0, "ratio": 0 }
+	]
+}
