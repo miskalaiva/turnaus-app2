@@ -9,7 +9,16 @@ module.exports = {
     './nuxt.config.{js,ts}'
   ],
   theme: {
-    extend: {},
-  },
-  plugins: [],
+    extend: {
+      colors: {
+        coal: '#121212', // Tausta
+        smoke: '#282828', // Elementti
+        lightSmoke: '#3F3F3F', // Kevyempi harmaa
+        pig: '#f79cbf', // Korostus tms.
+        gold: '#FFD700'
+
+      },
+    },
+    plugins: [],
+  }
 }

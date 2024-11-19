@@ -15,9 +15,9 @@ db.exec(`
 // Alustetaan sarjataulukon data
 const stmtSarjataulukko = db.prepare("SELECT COUNT(*) as count FROM sarjataulukko")
 if (stmtSarjataulukko.get().count === 0) {
-	db.exec(`
+  db.exec(`
     INSERT INTO sarjataulukko (nimi) VALUES 
-    ('Are'), ('Hege'), ('Pedro'), ('Löyläri'), ('Joge'), ('Venyniilo')
+    ('HH'), ('HNJHN'), ('AAK'), ('100KL'), ('KN'), ('VFC')
   `)
 }
 
@@ -35,13 +35,13 @@ db.exec(`
 // Alustetaan pelaajat-taulukon data
 const stmtPelaajat = db.prepare("SELECT COUNT(*) as count FROM pelaajat")
 if (stmtPelaajat.get().count === 0) {
-	db.exec(`
+  db.exec(`
     INSERT INTO pelaajat (nimi) VALUES 
-    ('mussu'), ('joge'), ('vertti'), ('radu'), ('nico'), ('tenho'), ('hege'), 
-    ('wiilis'), ('pantsi'), ('zzeit'), ('paulus'), ('pule'), ('jerdad'), ('vedi'), 
-    ('are'), ('löyly'), ('lärvi'), ('leevit'), ('candle'), ('hasse'), ('jerpa'), 
-    ('pedro'), ('elmeri'), ('plasen'), ('veny'), ('jake'), ('joni'), ('peksi'), 
-    ('romu'), ('oliver')
+    ('Mussu'), ('Joge'), ('VerdiH'), ('Radu'), ('nico_ilari'), ('tenho'), ('heGe'), 
+    ('wiilis'), ('pantsi'), ('ZzeiT'), ('Perä_carry'), ('-Pule'), ('JerDAD'), ('vedivaan'), 
+    ('Are'), ('Löyläri'), ('lärvi'), ('s1mple'), ('Candle'), ('HASSE'), ('Jerbanderus'), 
+    ('Pedro'), ('elmeri:D'), ('Plasen'), ('venyniilo'), ('Jakender'), ('J0nesy'), ('Peksi'), 
+    ('romurauta'), ('Omppu6')
   `)
 }
 

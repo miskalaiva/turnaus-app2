@@ -1,10 +1,14 @@
 // nuxt.config.ts
 export default defineNuxtConfig({
-  css: ['@/assets/css/tailwind.css'], // Lisää Tailwind CSS tähän
+  // Lisää Tailwind CSS tähän
+  css: ['@/assets/css/tailwind.css'],
+
   postcss: {
     plugins: {
       tailwindcss: {},
       autoprefixer: {},
     },
   },
+
+  compatibilityDate: '2024-11-18',
 })
