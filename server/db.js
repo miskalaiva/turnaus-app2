@@ -1,5 +1,5 @@
 import Database from "better-sqlite3"
-const db = new Database("tournament.db")
+const db = new Database("tournament-official.db")
 
 // Luodaan sarjataulukko, jos sitä ei ole olemassa
 db.exec(`

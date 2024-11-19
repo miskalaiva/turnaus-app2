@@ -1,6 +1,6 @@
 <template>
   <div class="bg-coal text-lg">
-    <div class="container flex justify-between">
+    <div class="container flex justify-between -mb-5">
       <div>
         <h1 class="text-4xl text-white">CS2-turnaus 22.-24.11.2024</h1>
       </div>
@@ -12,12 +12,11 @@
       </div>
     </div>
 
-    <div class="container"></div>
     <div class="container py-6">
       <div class="mb-6 bg-smoke">
         <section class="text-white px-8 py-6">
           <h2 class="text-2xl">Sarjataulukko</h2>
-          <table class="border border-pig">
+          <table class="mb-0 pb-0 border border-pig">
             <thead class="border border-pig">
               <tr>
                 <th class="border-pig bg-smoke">Joukkue</th>
@@ -28,8 +27,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr class="border-pig" v-for="joukkue in sarjataulukko" :key="joukkue.nimi">
-                <td class="border-pig">{{ joukkue.nimi }}</td>
+              <tr class="border-pig" v-for="joukkue in sarjataulukko" :key="joukkue.nimi" @click="avaaModal(joukkue.nimi)">
+                <td class="border-pig cursor-pointer hover:bg-lightSmoke">{{ joukkue.nimi }}</td>
                 <td class="border-pig">{{ joukkue.voitot }}</td>
                 <td class="border-pig">{{ joukkue.tasapelit }}</td>
                 <td class="border-pig">{{ joukkue.havio }}</td>
@@ -37,6 +36,7 @@
               </tr>
             </tbody>
           </table>
+          <p class="italic mt-0 pt-0 text-sm mb-4">Klikkaamalla sarjataulukossa joukkueen nimeä pääset tarkastelemaan joukkueen kokoonpanoa.</p>
           <div v-if="onKirjautunut">
             <label for="joukkue" class="mr-2">Päivitä joukkueen</label>
             <select v-model="valittuJoukkue" id="joukkue" class="mr-2 w-32 px-2 py-1 border rounded-md border-pig hover:bg-lightSmoke bg-smoke">
@@ -59,6 +59,17 @@
               <button class="px-4 py-1 mr-4 border border-pig hover:bg-lightSmoke" @click="lisaaTulos('voitto', -1)">Voitto</button>
               <button class="px-4 py-1 border border-pig hover:bg-lightSmoke" @click="lisaaTulos('tasapeli', -1)">Tasapeli</button>
               <button class="px-4 py-1 mx-4 border border-pig hover:bg-lightSmoke" @click="lisaaTulos('havio', -1)">Häviö</button>
+            </div>
+          </div>
+
+          <!-- Modal for showing team players -->
+          <div v-if="naytaModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div class="bg-smoke text-white p-6 rounded-md w-1/3">
+              <h3 class="text-xl font-bold mb-4">Joukkueen {{ modalJoukkue }} pelaajat</h3>
+              <ul>
+                <li class="text-xl mb-2" v-for="pelaaja in joukkueenPelaajat" :key="pelaaja">{{ pelaaja }}</li>
+              </ul>
+              <button class="mt-6 px-4 py-2 border border-pig hover:bg-lightSmoke" @click="suljeModal">Sulje</button>
             </div>
           </div>
         </section>
@@ -97,7 +108,7 @@
             <span>tilastoja</span>
           </div>
           <div class="flex items-center">
-            <p class="pr-4">Lisää pelaajalle tilastoja:</p>
+            <p class="pr-4">Lisää pelaajalle:</p>
             <div class="py-2 pr-4">
               <label class="mr-2">K</label>
               <input class="w-16 py-1 rounded-md px-2 border border-pig bg-smoke" type="number" v-model.number="muutokset.kill" />
@@ -176,6 +187,17 @@ import { onMounted } from 'vue'
 export default {
   data() {
     return {
+      joukkueetPelaajat: {
+        HH: ['Are', 'pantsi', 'HASSE', 'J0nesy', 'nico_ilari'],
+        HNJHN: ['heGe', 'lärvi', 'Jakender', 'elmeri:D', 'VerdiH'],
+        AAK: ['pedro', 'vedivaan', 'romurauta', 'Omppu6', '-Pule'],
+        '100KL': ['Löyläri', 'Zzeit', 'Peksi', 'wiilis', 'Radu'],
+        KN: ['Joge', 'tenho', 'Plasen', 'Perä_carry', 'Jerbanderus'],
+        VFC: ['Venyniilo', 'Mussu', 'Candle', 'JerDAD', 's1mple'],
+      },
+      naytaModal: false,
+      modalJoukkue: '',
+      joukkueenPelaajat: [],
       // Kirjautuminen
       salasana: '',
       onKirjautunut: false,
@@ -189,118 +211,106 @@ export default {
       muutokset: { kill: 0, death: 0, assist: 0 },
       otteluohjelmaPerjantai: [
         {
-          aika: '18:00-18:45',
-          kentta1: 'HH vs AAK',
-          kentta2: 'AAK vs 100KL',
-          kentta3: 'KN vs VFC',
-        },
-        {
-          aika: '18:45-19:30',
-          kentta1: 'HH vs AAK',
-          kentta2: 'HNJHN vs KN',
-          kentta3: '100KL vs VFC',
-        },
-        {
-          aika: '19:30-20:15',
-          kentta1: 'HH vs 100KL',
-          kentta2: 'HNJHN vs VFC',
-          kentta3: 'AAK vs KN',
-        },
-        {
-          aika: '20:15-21:00',
+          aika: '1. 18:00-18:45',
           kentta1: 'HH vs KN',
           kentta2: 'HNJHN vs 100KL',
           kentta3: 'AAK vs VFC',
         },
         {
-          aika: '21:00-21:45',
-          kentta1: 'HH vs VFC',
-          kentta2: 'HNJHN vs AAK',
-          kentta3: 'KN vs 100KL',
-        },
-        {
-          aika: '21:45-22:30',
+          aika: '2. 18:45-19:30',
           kentta1: 'HH vs HNJHN',
-          kentta2: 'AAK vs KN',
+          kentta2: 'KN vs AAK',
           kentta3: '100KL vs VFC',
         },
         {
-          aika: '22:30-23:15',
-          kentta1: 'HH vs AAK',
-          kentta2: 'HNJHN vs VFC',
-          kentta3: 'KN vs 100KL',
-        },
-        {
-          aika: '23:15-00:00',
+          aika: '3. 19:30-20:15',
           kentta1: 'HH vs 100KL',
-          kentta2: 'HNJHN vs KN',
-          kentta3: 'AAK vs VFC',
+          kentta2: 'KN vs VFC',
+          kentta3: 'HNJHN vs AAK',
         },
         {
-          aika: '00:00-00:45',
+          aika: '4. 20:15-21:00',
+          kentta1: 'HH vs AAK',
+          kentta2: 'KN vs 100KL',
+          kentta3: 'HNJHN vs VFC',
+        },
+        {
+          aika: '5. 21:00-21:45',
+          kentta1: 'HH vs VFC',
+          kentta2: 'KN vs HNJHN',
+          kentta3: '100KL vs AAK',
+        },
+        {
+          aika: '6. 21:45-22:30',
           kentta1: 'HH vs KN',
           kentta2: 'HNJHN vs 100KL',
           kentta3: 'AAK vs VFC',
         },
         {
-          aika: '00:45-01:30',
-          kentta1: 'HH vs KN',
-          kentta2: 'HNJHN vs 100KL',
-          kentta3: 'AAK vs VFC',
+          aika: '7. 22:30-23:15',
+          kentta1: 'HH vs HNJHN',
+          kentta2: 'KN vs AAK',
+          kentta3: '100KL vs VFC',
+        },
+        {
+          aika: '8. 23:15-00:00',
+          kentta1: 'HH vs 100KL',
+          kentta2: 'KN vs VFC',
+          kentta3: 'HNJHN vs AAK',
+        },
+        {
+          aika: '9. 00:00-00:45',
+          kentta1: 'HH vs AAK',
+          kentta2: 'KN vs 100KL',
+          kentta3: 'HNJHN vs VFC',
+        },
+        {
+          aika: '10. 00:45-01:30',
+          kentta1: 'HH vs VFC',
+          kentta2: 'KN vs HNJHN',
+          kentta3: '100KL vs AAK',
         },
       ],
       otteluohjelmaLauantai: [
         {
-          aika: '11:00-11:45',
-          kentta1: 'HH vs VFC',
-          kentta2: 'HNJHN vs AAK',
-          kentta3: 'KN vs 100KL',
-        },
-        {
-          aika: '11:45-12:30',
-          kentta1: 'HH vs HNJHN',
-          kentta2: 'AAK vs 100KL',
-          kentta3: 'KN vs VFC',
-        },
-        {
-          aika: '12:30-13:15',
-          kentta1: 'HH vs AAK',
-          kentta2: 'HNJHN vs KN',
-          kentta3: '100KL vs VFC',
-        },
-        {
-          aika: '13:15-14:00',
-          kentta1: 'HH vs 100KL',
-          kentta2: 'HNJHN vs VFC',
-          kentta3: 'AAK vs KN',
-        },
-        {
-          aika: '14:00-14:45',
+          aika: '11. 11:00-11:45',
           kentta1: 'HH vs KN',
           kentta2: 'HNJHN vs 100KL',
           kentta3: 'AAK vs VFC',
         },
         {
-          aika: '14:45-15:30',
-          kentta1: 'HH vs VFC',
-          kentta2: 'HNJHN vs AAK',
-          kentta3: 'KN vs 100KL',
+          aika: '12. 11:45-12:30',
+          kentta1: 'HH vs HNJHN',
+          kentta2: 'KN vs AAK',
+          kentta3: '100KL vs VFC',
         },
         {
-          aika: '15:30-16.15',
+          aika: '13. 12:30-13:15',
+          kentta1: 'HH vs 100KL',
+          kentta2: 'KN vs VFC',
+          kentta3: 'HNJHN vs AAK',
+        },
+        {
+          aika: '14. 13:15-14:00',
           kentta1: 'HH vs AAK',
-          kentta2: 'HNJHN vs VFC',
-          kentta3: 'KN vs 100KL',
+          kentta2: 'KN vs 100KL',
+          kentta3: 'HNJHN vs VFC',
+        },
+        {
+          aika: '15. 14:00-14:45',
+          kentta1: 'HH vs VFC',
+          kentta2: 'KN vs HNJHN',
+          kentta3: '100KL vs AAK',
         },
         {
           aika: '16:15-18:15',
-          kentta1: 'Runkosarjan 3. vs Runkosarjan 6.',
-          kentta2: 'Runkosarjan 4. vs Runkosarjan 5.',
+          kentta1: 'Q1 | 3. vs 6.',
+          kentta2: 'Q2 | 4. vs 5.',
         },
         {
           aika: '18:15-20:15',
-          kentta1: 'Quarter 1 voittaja vs Runkosarjan 2.',
-          kentta2: 'Quarter 2 voittaja vs Runkosarjan 1.',
+          kentta1: 'Runkosarjan 1. vs Q2',
+          kentta2: 'Runkosarjan 2. vs Q1',
         },
         {
           aika: '20:15-22:15',
@@ -310,6 +320,17 @@ export default {
     }
   },
   methods: {
+    avaaModal(joukkueNimi) {
+      this.modalJoukkue = joukkueNimi
+      this.joukkueenPelaajat = this.joukkueetPelaajat[joukkueNimi] || []
+      this.naytaModal = true
+    },
+    suljeModal() {
+      this.naytaModal = false
+      this.modalJoukkue = ''
+      this.joukkueenPelaajat = []
+    },
+
     kirjauduSisaan() {
       if (this.salasana === 'rantanen') {
         this.onKirjautunut = true
