@@ -14,7 +14,7 @@ module.exports = {
         coal: '#121212', // Tausta
         smoke: '#282828', // Elementti
         lightSmoke: '#3F3F3F', // Kevyempi harmaa
-        pig: '#f79cbf', // Korostus tms.
+        pig: '#3f3f3f', // Korostus tms. pig nimi jäi aiemmasta pinkistä väristä
         gold: '#FFD700'
 
       },
