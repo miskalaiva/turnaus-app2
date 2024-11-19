@@ -128,6 +128,7 @@
     <div class="container">
       <section class="bg-smoke text-white px-8 py-6">
         <h2 class="text-2xl">Otteluohjelma</h2>
+        <p class="mt-6">Perjantai</p>
         <table class="border border-pig">
           <thead class="border border-pig">
             <tr class="border border-pig">
@@ -138,7 +139,26 @@
             </tr>
           </thead>
           <tbody>
-            <tr class="border-pig bg-smoke" v-for="(ottelu, index) in otteluohjelma" :key="index">
+            <tr class="border-pig bg-smoke" v-for="(ottelu, index) in otteluohjelmaPerjantai" :key="index">
+              <td class="border-pig bg-smoke">{{ ottelu.aika }}</td>
+              <td class="border-pig bg-smoke">{{ ottelu.kentta1 }}</td>
+              <td class="border-pig bg-smoke">{{ ottelu.kentta2 }}</td>
+              <td class="border-pig bg-smoke">{{ ottelu.kentta3 }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="mt-6">Lauantai</p>
+        <table class="border border-pig">
+          <thead class="border border-pig">
+            <tr class="border border-pig">
+              <th class="border-pig bg-smoke">Aika</th>
+              <th class="border-pig bg-smoke">Peli 1</th>
+              <th class="border-pig bg-smoke">Peli 2</th>
+              <th class="border-pig bg-smoke">Peli 3</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-pig bg-smoke" v-for="(ottelu, index) in otteluohjelmaLauantai" :key="index">
               <td class="border-pig bg-smoke">{{ ottelu.aika }}</td>
               <td class="border-pig bg-smoke">{{ ottelu.kentta1 }}</td>
               <td class="border-pig bg-smoke">{{ ottelu.kentta2 }}</td>
@@ -167,42 +187,124 @@ export default {
       sarjataulukko: [],
       pelaajat: [],
       muutokset: { kill: 0, death: 0, assist: 0 },
-      otteluohjelma: [
+      otteluohjelmaPerjantai: [
         {
-          aika: 'Lisätäänkö ',
-          kentta1: 'tähän',
-          kentta2: 'kumpi',
-          kentta3: 'voittaa?',
+          aika: '18:00-18:45',
+          kentta1: 'HH vs AAK',
+          kentta2: 'AAK vs 100KL',
+          kentta3: 'KN vs VFC',
         },
         {
-          aika: '18:00-19:00',
-          kentta1: 'Are vs Hege',
-          kentta2: 'Pedro vs Löyläri',
-          kentta3: 'Joge vs Venyniilo',
+          aika: '18:45-19:30',
+          kentta1: 'HH vs AAK',
+          kentta2: 'HNJHN vs KN',
+          kentta3: '100KL vs VFC',
         },
         {
-          aika: '19:00-20:00',
-          kentta1: 'Are vs Pedro',
-          kentta2: 'Hege vs Joge',
-          kentta3: 'Löyläri vs Venyniilo',
+          aika: '19:30-20:15',
+          kentta1: 'HH vs 100KL',
+          kentta2: 'HNJHN vs VFC',
+          kentta3: 'AAK vs KN',
         },
         {
-          aika: '20:00-21:00',
-          kentta1: 'RUOKATAUKO',
-          kentta2: 'RUOKATAUKO',
-          kentta3: 'RUOKATAUKO',
+          aika: '20:15-21:00',
+          kentta1: 'HH vs KN',
+          kentta2: 'HNJHN vs 100KL',
+          kentta3: 'AAK vs VFC',
         },
         {
-          aika: '21:00-22:00',
-          kentta1: 'Are vs Löyläri',
-          kentta2: 'Hege vs Venyniilo',
-          kentta3: 'Pedro vs Joge',
+          aika: '21:00-21:45',
+          kentta1: 'HH vs VFC',
+          kentta2: 'HNJHN vs AAK',
+          kentta3: 'KN vs 100KL',
         },
         {
-          aika: '22:00-23:00',
-          kentta1: 'Are vs Joge',
-          kentta2: 'Hege vs Löyläri',
-          kentta3: 'Pedro vs Venyniilo',
+          aika: '21:45-22:30',
+          kentta1: 'HH vs HNJHN',
+          kentta2: 'AAK vs KN',
+          kentta3: '100KL vs VFC',
+        },
+        {
+          aika: '22:30-23:15',
+          kentta1: 'HH vs AAK',
+          kentta2: 'HNJHN vs VFC',
+          kentta3: 'KN vs 100KL',
+        },
+        {
+          aika: '23:15-00:00',
+          kentta1: 'HH vs 100KL',
+          kentta2: 'HNJHN vs KN',
+          kentta3: 'AAK vs VFC',
+        },
+        {
+          aika: '00:00-00:45',
+          kentta1: 'HH vs KN',
+          kentta2: 'HNJHN vs 100KL',
+          kentta3: 'AAK vs VFC',
+        },
+        {
+          aika: '00:45-01:30',
+          kentta1: 'HH vs KN',
+          kentta2: 'HNJHN vs 100KL',
+          kentta3: 'AAK vs VFC',
+        },
+      ],
+      otteluohjelmaLauantai: [
+        {
+          aika: '11:00-11:45',
+          kentta1: 'HH vs VFC',
+          kentta2: 'HNJHN vs AAK',
+          kentta3: 'KN vs 100KL',
+        },
+        {
+          aika: '11:45-12:30',
+          kentta1: 'HH vs HNJHN',
+          kentta2: 'AAK vs 100KL',
+          kentta3: 'KN vs VFC',
+        },
+        {
+          aika: '12:30-13:15',
+          kentta1: 'HH vs AAK',
+          kentta2: 'HNJHN vs KN',
+          kentta3: '100KL vs VFC',
+        },
+        {
+          aika: '13:15-14:00',
+          kentta1: 'HH vs 100KL',
+          kentta2: 'HNJHN vs VFC',
+          kentta3: 'AAK vs KN',
+        },
+        {
+          aika: '14:00-14:45',
+          kentta1: 'HH vs KN',
+          kentta2: 'HNJHN vs 100KL',
+          kentta3: 'AAK vs VFC',
+        },
+        {
+          aika: '14:45-15:30',
+          kentta1: 'HH vs VFC',
+          kentta2: 'HNJHN vs AAK',
+          kentta3: 'KN vs 100KL',
+        },
+        {
+          aika: '15:30-16.15',
+          kentta1: 'HH vs AAK',
+          kentta2: 'HNJHN vs VFC',
+          kentta3: 'KN vs 100KL',
+        },
+        {
+          aika: '16:15-18:15',
+          kentta1: 'Runkosarjan 3. vs Runkosarjan 6.',
+          kentta2: 'Runkosarjan 4. vs Runkosarjan 5.',
+        },
+        {
+          aika: '18:15-20:15',
+          kentta1: 'Quarter 1 voittaja vs Runkosarjan 2.',
+          kentta2: 'Quarter 2 voittaja vs Runkosarjan 1.',
+        },
+        {
+          aika: '20:15-22:15',
+          kentta1: 'FINAALI',
         },
       ],
     }
