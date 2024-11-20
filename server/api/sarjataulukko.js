@@ -26,28 +26,33 @@ export default defineEventHandler(async (event) => {
 		// Päivitä tiedot
 		try {
 			if (tulos === "voitto") {
+				// Voitosta lisätään tai vähennetään 2 pistettä
 				db.prepare(
 					`
 					UPDATE sarjataulukko
-					SET voitot = MAX(0, voitot + ?), pisteet = MAX(0, pisteet + ?)
+					SET voitot = MAX(0, voitot + ?),
+						pisteet = MAX(0, pisteet + ? * 2)
 					WHERE nimi = ?
-				`
+					`
 				).run(maara, maara, nimi)
 			} else if (tulos === "tasapeli") {
+				// Tasapelistä lisätään tai vähennetään 1 piste
 				db.prepare(
 					`
 					UPDATE sarjataulukko
-					SET tasapelit = MAX(0, tasapelit + ?)
+					SET tasapelit = MAX(0, tasapelit + ?),
+						pisteet = MAX(0, pisteet + ? * 1)
 					WHERE nimi = ?
-				`
-				).run(maara, nimi)
+					`
+				).run(maara, maara, nimi)
 			} else if (tulos === "havio") {
+				// Häviöstä ei lisätä tai vähennetä pisteitä
 				db.prepare(
 					`
 					UPDATE sarjataulukko
 					SET havio = MAX(0, havio + ?)
 					WHERE nimi = ?
-				`
+					`
 				).run(maara, nimi)
 			} else {
 				console.error("Virheellinen tulos:", tulos)
