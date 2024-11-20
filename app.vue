@@ -1,239 +1,394 @@
 <template>
 	<div class="bg-coal text-lg">
-		<div class="container flex justify-between">
-			<div>
-				<h1 class="text-4xl text-white">CS2-turnaus 22.-24.11.2024</h1>
-			</div>
-			<div v-if="!onKirjautunut" class="text-white">
-				<label for="salasana" class="mr-2"></label>
-				<input id="salasana" v-model="salasana" placeholder="Anna salasana" type="password" class="px-2 py-1 rounded-md border border-pig bg-smoke" />
-				<button class="ml-4 px-4 py-1 border border-pig hover:bg-lightSmoke" @click="kirjauduSisaan">Kirjaudu</button>
-				<p v-if="virhe" class="text-red-500 mt-2">{{ virhe }}</p>
+		<div class="flex flex-col items-center justify-center py-6">
+			<div class="container flex items-center justify-between -mb-5">
+				<div>
+					<h1 class="text-4xl text-white shadow-lg">Ranuan Kummit CS2-turnaus</h1>
+				</div>
+				<div>
+					<button class="text-white px-4 py-1 mr-4 border border-pig hover:bg-lightSmoke" @click="avaaInfoModal">Turnausinfo</button>
+				</div>
+				<div v-if="!onKirjautunut" class="text-white">
+					<label for="salasana" class="mr-2"></label>
+					<input
+						id="salasana"
+						v-model="salasana"
+						placeholder="Anna salasana"
+						type="password"
+						class="px-2 py-1 rounded-md border border-pig bg-smoke max-w-44"
+						:class="virhe ? 'border-red-500' : 'border-pig'"
+					/>
+					<button class="ml-4 px-4 py-1 border border-pig hover:bg-lightSmoke" @click="kirjauduSisaan">Kirjaudu</button>
+				</div>
 			</div>
 		</div>
 
-		<div class="container"></div>
+		<!-- Turnausinfo modal -->
+		<transition appear name="modal">
+			<div v-if="modalAuki" class="fixed inset-0 flex justify-center items-center">
+				<div class="bg-coal shadow-xl shadow-black rounded-lg p-6 w-full max-w-2xl">
+					<ul class="list-disc pl-5 mb-6 text-white space-y-2">
+						<li class="mb-2">Pelit pelataan perjantaina klo 18.00–02.00 ja lauantaina klo 11.00–22.15.</li>
+						<li class="mb-2">Jokainen pelaaja maksaa palkintopottiin 10 euroa. Rahat jaetaan voittajajoukkueen pelaajien kesken.</li>
+						<li class="mb-2">
+							Alkusarjassa pelataan jokaista joukkuetta vastaan kolme kertaa (15 peliä/joukkue). Tämän jälkeen pelataan pudotuspelit.
+						</li>
+						<li class="mb-2">
+							Alkusarjan ottelut pelataan best of 1 -formaatissa, ja puolivälierät, välierät sekä finaali pelataan best of 3 -formaatissa.
+						</li>
+						<li class="mb-2">Sijoitus sarjataulukossa määräytyy seuraavasti: 1) pisteet, 2) keskinäiset ottelut, 3) voitetut erät.</li>
+						<li class="mb-2">
+							Perjantaina sovitaan ruokatauko paikan päällä. Lauantaina pidetään alkusarjan ja pudotuspelien välissä 1,5 tunnin ruokatauko..
+						</li>
+					</ul>
+					<button class="mt-6 px-4 text-white py-2 border border-pig hover:bg-lightSmoke" @click="suljeInfoModal">Sulje</button>
+				</div>
+			</div>
+		</transition>
+
 		<div class="container py-6">
 			<div class="mb-6 bg-smoke">
-				<section class="text-white px-8 py-6">
-					<h2 class="text-2xl">Sarjataulukko</h2>
-					<table class="border border-pig">
-						<thead class="border border-pig">
-							<tr>
-								<th class="border-pig bg-smoke">Joukkue</th>
-								<th class="border-pig bg-smoke">Voitot</th>
-								<th class="border-pig bg-smoke">Tasapelit</th>
-								<th class="border-pig bg-smoke">Häviöt</th>
-								<th class="border-pig bg-smoke">Pisteet</th>
-								<th class="border-pig bg-smoke">(Erät) W-L</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr class="border-pig" v-for="joukkue in sarjataulukko" :key="joukkue.nimi">
-								<td class="border-pig">{{ joukkue.nimi }}</td>
-								<td class="border-pig">{{ joukkue.voitot }}</td>
-								<td class="border-pig">{{ joukkue.tasapelit }}</td>
-								<td class="border-pig">{{ joukkue.havio }}</td>
-								<td class="border-pig">{{ joukkue.pisteet }}</td>
-								<td class="border-pig">{{ laskeErat(joukkue.nimi) }}</td>
-							</tr>
-						</tbody>
-					</table>
-					<div v-if="onKirjautunut">
-						<label for="joukkue" class="mr-2">Päivitä joukkueen</label>
-						<select v-model="valittuJoukkue" id="joukkue" class="mr-2 w-32 px-2 py-1 border rounded-md border-pig hover:bg-lightSmoke bg-smoke">
-							<option class="font-medium" v-for="joukkue in joukkueet" :key="joukkue" :value="joukkue">
-								{{ joukkue }}
-							</option>
-						</select>
-						<span>tilastoja</span>
-					</div>
+				<section class="text-white px-8 py-6 flex flex-col items-center">
+					<div>
+						<div class="flex justify-between items-center">
+							<h2 class="text-2xl">Sarjataulukko</h2>
+							<button class="px-4 py-2 border border-pig hover:bg-lightSmoke text-white" @click="scrollaaOtteluohjelmaan">
+								Tästä otteluohjelmaan
+							</button>
+						</div>
+						<table class="mb-0 pb-0 border border-pig w-full">
+							<thead class="border border-pig">
+								<tr>
+									<th class="border-pig bg-smoke">Joukkue</th>
+									<th class="border-pig bg-smoke">Voitot</th>
+									<th class="border-pig bg-smoke">Tasapelit</th>
+									<th class="border-pig bg-smoke">Häviöt</th>
+									<th class="border-pig bg-smoke">Pisteet</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr class="border-pig" v-for="joukkue in sarjataulukko" :key="joukkue.nimi" @click="avaaModal(joukkue.nimi)">
+									<td class="border-pig cursor-pointer hover:bg-lightSmoke">{{ joukkue.nimi }}</td>
+									<td class="border-pig">{{ joukkue.voitot }}</td>
+									<td class="border-pig">{{ joukkue.tasapelit }}</td>
+									<td class="border-pig">{{ joukkue.havio }}</td>
+									<td class="border-pig">{{ joukkue.pisteet }}</td>
+								</tr>
+							</tbody>
+						</table>
+						<p class="italic mt-1 pt-0 text-sm mb-4">Klikkaamalla sarjataulukossa joukkueen nimeä voit tarkastella joukkueen kokoonpanoa.</p>
+						<div v-if="onKirjautunut">
+							<label for="joukkue" class="mr-2">Päivitä joukkueen</label>
+							<select v-model="valittuJoukkue" id="joukkue" class="mr-2 w-32 px-2 py-1 border rounded-md border-pig hover:bg-lightSmoke bg-smoke">
+								<option class="font-medium" v-for="joukkue in joukkueet" :key="joukkue" :value="joukkue">
+									{{ joukkue }}
+								</option>
+							</select>
+							<span>tilastoja</span>
+						</div>
 
-					<div class="pt-6" v-if="onKirjautunut">
-						<div class="mb-4 flex items-center">
-							<p class="pr-6">Lisää joukkueelle:</p>
-							<button class="px-4 py-1 mr-4 border border-pig hover:bg-lightSmoke" @click="lisaaTulos('voitto', +1)">Voitto</button>
-							<button class="px-4 py-1 border border-pig hover:bg-lightSmoke" @click="lisaaTulos('tasapeli', +1)">Tasapeli</button>
-							<button class="px-4 py-1 mx-4 border border-pig hover:bg-lightSmoke" @click="lisaaTulos('havio', +1)">Häviö</button>
+						<div class="pt-6" v-if="onKirjautunut">
+							<div class="mb-4 flex items-center">
+								<p class="pr-6">Lisää joukkueelle:</p>
+								<button class="px-4 py-1 mr-4 border border-pig hover:bg-lightSmoke" @click="lisaaTulos('voitto', +1)">Voitto</button>
+								<button class="px-4 py-1 border border-pig hover:bg-lightSmoke" @click="lisaaTulos('tasapeli', +1)">Tasapeli</button>
+								<button class="px-4 py-1 mx-4 border border-pig hover:bg-lightSmoke" @click="lisaaTulos('havio', +1)">Häviö</button>
+							</div>
+							<div class="mb-4 flex items-center">
+								<p class="pr-4">Poista joukkueelta:</p>
+								<button class="px-4 py-1 mr-4 border border-pig hover:bg-lightSmoke" @click="lisaaTulos('voitto', -1)">Voitto</button>
+								<button class="px-4 py-1 border border-pig hover:bg-lightSmoke" @click="lisaaTulos('tasapeli', -1)">Tasapeli</button>
+								<button class="px-4 py-1 mx-4 border border-pig hover:bg-lightSmoke" @click="lisaaTulos('havio', -1)">Häviö</button>
+							</div>
 						</div>
-						<div class="mb-4 flex items-center">
-							<p class="pr-4">Poista joukkueelta:</p>
-							<button class="px-4 py-1 mr-4 border border-pig hover:bg-lightSmoke" @click="lisaaTulos('voitto', -1)">Voitto</button>
-							<button class="px-4 py-1 border border-pig hover:bg-lightSmoke" @click="lisaaTulos('tasapeli', -1)">Tasapeli</button>
-							<button class="px-4 py-1 mx-4 border border-pig hover:bg-lightSmoke" @click="lisaaTulos('havio', -1)">Häviö</button>
-						</div>
+
+						<!-- Modal for showing team players -->
+						<transition appear name="modal">
+							<div v-if="naytaModal" class="fixed inset-0 flex items-center justify-center">
+								<div class="bg-coal text-white p-6 rounded-md shadow-xl shadow-black w-1/3">
+									<h3 class="text-xl font-bold mb-4">Joukkueen {{ modalJoukkue }} pelaajat</h3>
+									<ul>
+										<li class="text-xl mb-2" v-for="pelaaja in joukkueenPelaajat" :key="pelaaja">{{ pelaaja }}</li>
+									</ul>
+									<button class="mt-6 px-4 py-2 border border-pig hover:bg-lightSmoke" @click="suljeModal">Sulje</button>
+								</div>
+							</div>
+						</transition>
 					</div>
 				</section>
 			</div>
 
-			<section class="bg-smoke text-white px-8 py-6">
-				<p class="text-2xl mb-4">Tilastot</p>
-				<table class="border-pig">
-					<thead class="border-pig">
-						<tr>
-							<th class="border-pig bg-smoke">Pelaaja</th>
-							<th class="border-pig bg-smoke">K</th>
-							<th class="border-pig bg-smoke">D</th>
-							<th class="border-pig bg-smoke">A</th>
-							<th class="border-pig bg-smoke">K/D Ratio</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr class="border-pig" v-for="(pelaaja, index) in pelaajat" :key="pelaaja.nimi">
-							<td class="border-pig" :class="{ 'flame-effect': index < 5 }">{{ pelaaja.nimi }}</td>
-							<td class="border-pig">{{ pelaaja.kill }}</td>
-							<td class="border-pig">{{ pelaaja.death }}</td>
-							<td class="border-pig">{{ pelaaja.assist }}</td>
-							<td class="border-pig" :class="{ 'flame-effect': index < 5 }">{{ pelaaja.ratio.toFixed(2) }}</td>
-						</tr>
-					</tbody>
-				</table>
-				<div v-if="onKirjautunut">
-					<div class="pb-2">
-						<label for="pelaaja" class="mr-2">Päivitä pelaajan</label>
-						<select v-model="valittuPelaaja" id="pelaaja" class="w-32 px-2 mr-2 py-1 border rounded-md border-pig hover:bg-lightSmoke bg-smoke">
-							<option class="" v-for="pelaaja in pelaajat" :key="pelaaja.nimi" :value="pelaaja.nimi">
-								{{ pelaaja.nimi }}
-							</option>
-						</select>
-						<span>tilastoja</span>
-					</div>
-					<div class="flex items-center">
-						<p class="pr-4">Lisää pelaajalle tilastoja:</p>
-						<div class="py-2 pr-4">
-							<label class="mr-2">K</label>
-							<input class="w-16 py-1 rounded-md px-2 border border-pig bg-smoke" type="number" v-model.number="muutokset.kill" />
+			<section class="bg-smoke text-white px-8 py-6 flex flex-col items-center">
+				<div>
+					<h2 class="text-2xl mb-4">Tilastot</h2>
+					<table class="border-pig w-full">
+						<thead class="border-pig">
+							<tr>
+								<th class="border-pig bg-smoke">Pelaaja</th>
+								<th class="border-pig bg-smoke">K</th>
+								<th class="border-pig bg-smoke">D</th>
+								<th class="border-pig bg-smoke">A</th>
+								<th class="border-pig bg-smoke">K/D Ratio</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr class="border-pig" v-for="(pelaaja, index) in pelaajat" :key="pelaaja.nimi">
+								<td class="border-pig" :class="{ 'flame-effect': index < 5 }">{{ pelaaja.nimi }}</td>
+								<td class="border-pig">{{ pelaaja.kill }}</td>
+								<td class="border-pig">{{ pelaaja.death }}</td>
+								<td class="border-pig">{{ pelaaja.assist }}</td>
+								<td class="border-pig" :class="{ 'flame-effect': index < 5 }">{{ pelaaja.ratio.toFixed(2) }}</td>
+							</tr>
+						</tbody>
+					</table>
+					<!--Tässä teksti siksi, että taulukko olis yhtä leveä ko ylempi taulukko. En jaksanu alkaa tyylittelemään nii käytän tämmöstä häksiä-->
+					<p class="italic m-0 p-0 text-sm mb-4 text-smoke">Klikkaamalla sarjataulukossa joukkueen nimeä voit tarkastella joukkueen kokoonpanoa.</p>
+					<div v-if="onKirjautunut">
+						<div class="pb-2">
+							<label for="pelaaja" class="mr-2">Päivitä pelaajan</label>
+							<select v-model="valittuPelaaja" id="pelaaja" class="w-32 px-2 mr-2 py-1 border rounded-md border-pig hover:bg-lightSmoke bg-smoke">
+								<option class="" v-for="pelaaja in pelaajat" :key="pelaaja.nimi" :value="pelaaja.nimi">
+									{{ pelaaja.nimi }}
+								</option>
+							</select>
+							<span>tilastoja</span>
 						</div>
-						<div class="py-2 pr-4">
-							<label class="mr-2">D</label>
-							<input class="px-2 py-1 rounded-md w-16 border border-pig bg-smoke" type="number" v-model.number="muutokset.death" />
+						<div class="flex items-center">
+							<p class="pr-4">Lisää pelaajalle:</p>
+							<div class="py-2 pr-4">
+								<label class="mr-2">K</label>
+								<input class="w-16 py-1 rounded-md px-2 border border-pig bg-smoke" type="number" v-model.number="muutokset.kill" />
+							</div>
+							<div class="py-2 pr-4">
+								<label class="mr-2">D</label>
+								<input class="px-2 py-1 rounded-md w-16 border border-pig bg-smoke" type="number" v-model.number="muutokset.death" />
+							</div>
+							<div class="py-2">
+								<label class="mr-2">A</label>
+								<input class="px-2 py-1 rounded-md w-16 border border-pig bg-smoke" type="number" v-model.number="muutokset.assist" />
+							</div>
 						</div>
-						<div class="py-2">
-							<label class="mr-2">A</label>
-							<input class="px-2 py-1 rounded-md w-16 border border-pig bg-smoke" type="number" v-model.number="muutokset.assist" />
+						<div class="pt-2">
+							<div class="mb-4 flex items-center">
+								<p class="pr-4">Poista pelaajalta:</p>
+								<button class="px-4 py-1 mr-4 border border-pig hover:bg-lightSmoke" @click="lisaaPelaajaTulos('kill', -1)">K</button>
+								<button class="px-4 py-1 border border-pig hover:bg-lightSmoke" @click="lisaaPelaajaTulos('death', -1)">D</button>
+								<button class="px-4 py-1 mx-4 border border-pig hover:bg-lightSmoke" @click="lisaaPelaajaTulos('assist', -1)">A</button>
+							</div>
 						</div>
-					</div>
-					<div class="pt-2">
-						<div class="mb-4 flex items-center">
-							<p class="pr-4">Poista pelaajalta:</p>
-							<button class="px-4 py-1 mr-4 border border-pig hover:bg-lightSmoke" @click="lisaaPelaajaTulos('kill', -1)">K</button>
-							<button class="px-4 py-1 border border-pig hover:bg-lightSmoke" @click="lisaaPelaajaTulos('death', -1)">D</button>
-							<button class="px-4 py-1 mx-4 border border-pig hover:bg-lightSmoke" @click="lisaaPelaajaTulos('assist', -1)">A</button>
+						<div class="pb-4 pt-2">
+							<button class="px-4 py-2 border border-pig text-white hover:bg-lightSmoke" @click="paivitaKDA">Päivitä tilastot</button>
 						</div>
-					</div>
-					<div class="pb-4 pt-2">
-						<button class="px-4 py-2 border border-pig text-white hover:bg-lightSmoke" @click="paivitaKDA">Päivitä tilastot</button>
 					</div>
 				</div>
 			</section>
 		</div>
 		<div class="container">
-			<section class="bg-smoke text-white px-8 py-6">
-				<h2 class="text-2xl">Otteluohjelma</h2>
-				<p class="mt-6">Perjantai</p>
-				<table class="border border-pig">
-					<thead class="border border-pig">
-						<tr class="border border-pig">
-							<th class="border-pig bg-smoke">Aika</th>
-							<th class="border-pig bg-smoke">Peli 1</th>
-							<th class="border-pig bg-smoke">Peli 2</th>
-							<th class="border-pig bg-smoke">Peli 3</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr class="border-pig bg-smoke" v-for="(ottelu, index) in otteluohjelmaPerjantai" :key="index">
-							<td class="border-pig bg-smoke">{{ ottelu.aika }}</td>
-							<td class="border-pig bg-smoke">
-								{{ ottelu.kentta1 }}
-								<div class="flex items-center mt-2">
-									<input
-										v-model.number="ottelu.kentta1Voitetut"
-										placeholder="W"
-										type="number"
-										class="w-16 px-2 py-1 border rounded-md mr-2"
-									/>
-									<input v-model.number="ottelu.kentta1Havitut" placeholder="L" type="number" class="w-16 px-2 py-1 border rounded-md" />
-								</div>
-							</td>
-							<td class="border-pig bg-smoke">
-								{{ ottelu.kentta2 }}
-								<div class="flex items-center mt-2">
-									<input
-										v-model.number="ottelu.kentta2Voitetut"
-										placeholder="W"
-										type="number"
-										class="w-16 px-2 py-1 border rounded-md mr-2"
-									/>
-									<input v-model.number="ottelu.kentta2Havitut" placeholder="L" type="number" class="w-16 px-2 py-1 border rounded-md" />
-								</div>
-							</td>
-							<td class="border-pig bg-smoke">
-								{{ ottelu.kentta3 }}
-								<div class="flex items-center mt-2">
-									<input
-										v-model.number="ottelu.kentta3Voitetut"
-										placeholder="W"
-										type="number"
-										class="w-16 px-2 py-1 border rounded-md mr-2"
-									/>
-									<input v-model.number="ottelu.kentta3Havitut" placeholder="L" type="number" class="w-16 px-2 py-1 border rounded-md" />
-								</div>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<p class="mt-6">Lauantai</p>
-				<table class="border border-pig">
-					<thead class="border border-pig">
-						<tr class="border border-pig">
-							<th class="border-pig bg-smoke">Aika</th>
-							<th class="border-pig bg-smoke">Peli 1</th>
-							<th class="border-pig bg-smoke">Peli 2</th>
-							<th class="border-pig bg-smoke">Peli 3</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr class="border-pig bg-smoke" v-for="(ottelu, index) in otteluohjelmaLauantai" :key="index">
-							<td class="border-pig bg-smoke">{{ ottelu.aika }}</td>
-							<td class="border-pig bg-smoke">
-								{{ ottelu.kentta1 }}
-								<div class="flex items-center mt-2">
-									<input
-										v-model.number="ottelu.kentta1Voitetut"
-										placeholder="W"
-										type="number"
-										class="w-16 px-2 py-1 border rounded-md mr-2"
-									/>
-									<input v-model.number="ottelu.kentta1Havitut" placeholder="L" type="number" class="w-16 px-2 py-1 border rounded-md" />
-								</div>
-							</td>
-							<td class="border-pig bg-smoke">
-								{{ ottelu.kentta2 }}
-								<div class="flex items-center mt-2">
-									<input
-										v-model.number="ottelu.kentta2Voitetut"
-										placeholder="W"
-										type="number"
-										class="w-16 px-2 py-1 border rounded-md mr-2"
-									/>
-									<input v-model.number="ottelu.kentta2Havitut" placeholder="L" type="number" class="w-16 px-2 py-1 border rounded-md" />
-								</div>
-							</td>
-							<td class="border-pig bg-smoke">
-								{{ ottelu.kentta3 }}
-								<div class="flex items-center mt-2">
-									<input
-										v-model.number="ottelu.kentta3Voitetut"
-										placeholder="W"
-										type="number"
-										class="w-16 px-2 py-1 border rounded-md mr-2"
-									/>
-									<input v-model.number="ottelu.kentta3Havitut" placeholder="L" type="number" class="w-16 px-2 py-1 border rounded-md" />
-								</div>
-							</td>
-						</tr>
-					</tbody>
-				</table>
+			<section ref="otteluohjelmaSection" class="bg-smoke text-white px-8 py-6 flex flex-col items-center">
+				<div>
+					<h2 class="text-2xl">Otteluohjelma</h2>
+					<p class="mt-6 -mb-4">Perjantai 22.11.2024</p>
+					<table class="border border-pig w-full">
+						<thead class="border border-pig">
+							<tr class="border border-pig">
+								<th class="border-pig bg-smoke">Aika</th>
+								<th class="border-pig bg-smoke">Peli 1</th>
+								<th class="border-pig bg-smoke">Peli 2</th>
+								<th class="border-pig bg-smoke">Peli 3</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr class="border-pig bg-smoke" v-for="(ottelu, index) in otteluohjelmaPerjantai" :key="index">
+								<td class="border-pig bg-smoke">{{ ottelu.aika }}</td>
+								<td class="border-pig bg-smoke">
+									<span>{{ ottelu.kentta1 }}</span>
+									<p v-if="ottelu.kentta1Voitetut !== null && ottelu.kentta1Havitut !== null" class="mt-1">
+										{{ ottelu.kentta1Voitetut }} - {{ ottelu.kentta1Havitut }}
+									</p>
+									<div v-if="onKirjautunut">
+										<input
+											type="number"
+											class="w-12 ml-2 mr-1 px-1 py-1 border border-pig rounded-md bg-smoke"
+											v-model.number="ottelu.kentta1Voitetut"
+											placeholder="0"
+										/>
+										-
+										<input
+											type="number"
+											class="w-12 ml-1 px-1 py-1 border border-pig rounded-md bg-smoke"
+											v-model.number="ottelu.kentta1Havitut"
+											placeholder="0"
+										/>
+										<button
+											class="ml-2 px-2 py-1 border border-pig hover:bg-lightSmoke text-sm"
+											@click="tallennaErat(ottelu.kentta1, ottelu.kentta1Voitetut, ottelu.kentta1Havitut, index, 'kentta1', 'perjantai')"
+										>
+											Tallenna
+										</button>
+									</div>
+								</td>
+								<td class="border-pig bg-smoke">
+									<span>{{ ottelu.kentta2 }}</span>
+									<p v-if="ottelu.kentta2Voitetut !== null && ottelu.kentta2Havitut !== null" class="mt-1">
+										{{ ottelu.kentta2Voitetut }} - {{ ottelu.kentta2Havitut }}
+									</p>
+									<div v-if="onKirjautunut">
+										<input
+											type="number"
+											class="w-12 ml-2 mr-1 px-1 py-1 border border-pig rounded-md bg-smoke"
+											v-model.number="ottelu.kentta2Voitetut"
+											placeholder="0"
+										/>
+										-
+										<input
+											type="number"
+											class="w-12 ml-1 px-1 py-1 border border-pig rounded-md bg-smoke"
+											v-model.number="ottelu.kentta2Havitut"
+											placeholder="0"
+										/>
+										<button
+											class="ml-2 px-2 py-1 border border-pig hover:bg-lightSmoke text-sm"
+											@click="tallennaErat(ottelu.kentta2, ottelu.kentta2Voitetut, ottelu.kentta2Havitut, index, 'kentta2', 'perjantai')"
+										>
+											Tallenna
+										</button>
+									</div>
+								</td>
+								<td class="border-pig bg-smoke">
+									<span>{{ ottelu.kentta3 }}</span>
+									<p v-if="ottelu.kentta3Voitetut !== null && ottelu.kentta3Havitut !== null" class="mt-1">
+										{{ ottelu.kentta3Voitetut }} - {{ ottelu.kentta3Havitut }}
+									</p>
+									<div v-if="onKirjautunut">
+										<input
+											type="number"
+											class="w-12 ml-2 mr-1 px-1 py-1 border border-pig rounded-md bg-smoke"
+											v-model.number="ottelu.kentta3Voitetut"
+											placeholder="0"
+										/>
+										-
+										<input
+											type="number"
+											class="w-12 ml-1 px-1 py-1 border border-pig rounded-md bg-smoke"
+											v-model.number="ottelu.kentta3Havitut"
+											placeholder="0"
+										/>
+										<button
+											class="ml-2 px-2 py-1 border border-pig hover:bg-lightSmoke text-sm"
+											@click="tallennaErat(ottelu.kentta3, ottelu.kentta3Voitetut, ottelu.kentta3Havitut, index, 'kentta3', 'perjantai')"
+										>
+											Tallenna
+										</button>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<!--Tässä teksti siksi, että taulukko olis yhtä leveä ko ylempi taulukko. En jaksanu alkaa tyylittelemään nii käytän tämmöstä häksiä-->
+					<p class="italic m-0 p-0 text-sm mb-4 text-smoke">Klikkaamalla sarjataulukossa joukkueen nimeä voit tarkastella joukkueen kokoonpanoa.</p>
+					<p class="mt-0 -mb-4">Lauantai 23.11.2024</p>
+					<table class="border border-pig w-full">
+						<thead class="border border-pig">
+							<tr class="border border-pig">
+								<th class="border-pig bg-smoke">Aika</th>
+								<th class="border-pig bg-smoke">Peli 1</th>
+								<th class="border-pig bg-smoke">Peli 2</th>
+								<th class="border-pig bg-smoke">Peli 3</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr class="border-pig bg-smoke" v-for="(ottelu, index) in otteluohjelmaLauantai" :key="index">
+								<td class="border-pig bg-smoke">{{ ottelu.aika }}</td>
+								<td class="border-pig bg-smoke">
+									<span>{{ ottelu.kentta1 }}</span>
+
+									<p v-if="ottelu.kentta1Voitetut !== null && ottelu.kentta1Havitut !== null" class="mt-1">
+										{{ ottelu.kentta1Voitetut }} - {{ ottelu.kentta1Havitut }}
+									</p>
+									<div v-if="ottelu.onTulosNakyva && onKirjautunut">
+										<input
+											type="number"
+											class="w-12 ml-2 mr-1 px-1 py-1 border border-pig rounded-md bg-smoke"
+											v-model.number="ottelu.kentta1Voitetut"
+											placeholder="0"
+										/>
+										-
+										<input
+											type="number"
+											class="w-10 ml-1 px-1 py-1 border border-pig rounded-md bg-smoke"
+											v-model.number="ottelu.kentta1Havitut"
+											placeholder="0"
+										/>
+										<button
+											class="ml-2 px-2 py-1 border border-pig hover:bg-lightSmoke text-sm"
+											@click="tallennaErat(ottelu.kentta1, ottelu.kentta1Voitetut, ottelu.kentta1Havitut, index, 'kentta1', 'lauantai')"
+										>
+											Tallenna
+										</button>
+									</div>
+								</td>
+								<td class="border-pig bg-smoke">
+									<span>{{ ottelu.kentta2 }}</span>
+									<!-- Näytä tulos ja inputit vain, jos tulostiedot ovat määritetty -->
+
+									<p v-if="ottelu.kentta2Voitetut !== null && ottelu.kentta2Havitut !== null" class="mt-1">
+										{{ ottelu.kentta2Voitetut }} - {{ ottelu.kentta2Havitut }}
+									</p>
+									<div v-if="ottelu.onTulosNakyva && onKirjautunut">
+										<input
+											type="number"
+											class="w-12 ml-2 mr-1 px-1 py-1 border border-pig rounded-md bg-smoke"
+											v-model.number="ottelu.kentta2Voitetut"
+											placeholder="0"
+										/>
+										-
+										<input
+											type="number"
+											class="w-12 ml-1 px-1 py-1 border border-pig rounded-md bg-smoke"
+											v-model.number="ottelu.kentta2Havitut"
+											placeholder="0"
+										/>
+										<button
+											class="ml-2 px-2 py-1 border border-pig hover:bg-lightSmoke text-sm"
+											@click="tallennaErat(ottelu.kentta2, ottelu.kentta2Voitetut, ottelu.kentta2Havitut, index, 'kentta2', 'lauantai')"
+										>
+											Tallenna
+										</button>
+									</div>
+								</td>
+								<td class="border-pig bg-smoke">
+									<span>{{ ottelu.kentta3 }}</span>
+									<p v-if="ottelu.kentta3Voitetut !== null && ottelu.kentta3Havitut !== null" class="mt-1">
+										{{ ottelu.kentta3Voitetut }} - {{ ottelu.kentta3Havitut }}
+									</p>
+									<div v-if="ottelu.onTulosNakyva && onKirjautunut">
+										<input
+											type="number"
+											class="w-12 ml-2 mr-1 px-1 py-1 border border-pig rounded-md bg-smoke"
+											v-model.number="ottelu.kentta3Voitetut"
+											placeholder="0"
+										/>
+										-
+										<input
+											type="number"
+											class="w-12 ml-1 px-1 py-1 border border-pig rounded-md bg-smoke"
+											v-model.number="ottelu.kentta3Havitut"
+											placeholder="0"
+										/>
+										<button
+											class="ml-2 px-2 py-1 border border-pig hover:bg-lightSmoke text-sm"
+											@click="tallennaErat(ottelu.kentta3, ottelu.kentta3Voitetut, ottelu.kentta3Havitut, index, 'kentta3', 'lauantai')"
+										>
+											Tallenna
+										</button>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<!--Tässä teksti siksi, että taulukko olis yhtä leveä ko ylempi taulukko. En jaksanu alkaa tyylittelemään nii käytän tämmöstä häksiä-->
+					<p class="italic m-0 p-0 text-sm mb-4 text-smoke">Klikkaamalla sarjataulukossa joukkueen nimeä voit tarkastella joukkueen kokoonpanoa.</p>
+				</div>
 			</section>
 		</div>
 	</div>
@@ -244,10 +399,22 @@ import { onMounted } from "vue"
 export default {
 	data() {
 		return {
+			modalAuki: false,
+			joukkueetPelaajat: {
+				HH: ["Are", "pantsi", "HASSE", "J0nesy", "nico_ilari"],
+				HNJHN: ["heGe", "lärvi", "Jakender", "elmeri:D", "VerdiH"],
+				AAK: ["pedro", "vedivaan", "romurauta", "Omppu6", "-Pule"],
+				"100KL": ["Löyläri", "Zzeit", "Peksi", "wiilis", "Radu"],
+				KN: ["Joge", "tenho", "Plasen", "Perä_carry", "Jerbanderus"],
+				VFC: ["Venyniilo", "Mussu", "Candle", "JerDAD", "s1mple"],
+			},
+			naytaModal: false,
+			modalJoukkue: "",
+			joukkueenPelaajat: [],
 			// Kirjautuminen
 			salasana: "",
 			onKirjautunut: false,
-			virhe: "",
+			virhe: false,
 			// Kirjautuminen
 			joukkueet: [],
 			valittuJoukkue: "Are",
@@ -257,43 +424,7 @@ export default {
 			muutokset: { kill: 0, death: 0, assist: 0 },
 			otteluohjelmaPerjantai: [
 				{
-					aika: "18:00-18:45",
-					kentta1: "HH vs AAK",
-					kentta1Voitetut: 0,
-					kentta1Havitut: 0,
-					kentta2: "AAK vs 100KL",
-					kentta2Voitetut: 0,
-					kentta2Havitut: 0,
-					kentta3: "KN vs VFC",
-					kentta3Voitetut: 0,
-					kentta3Havitut: 0,
-				},
-				{
-					aika: "18:45-19:30",
-					kentta1: "HH vs AAK",
-					kentta1Voitetut: 0,
-					kentta1Havitut: 0,
-					kentta2: "HNJHN vs KN",
-					kentta2Voitetut: 0,
-					kentta2Havitut: 0,
-					kentta3: "100KL vs VFC",
-					kentta3Voitetut: 0,
-					kentta3Havitut: 0,
-				},
-				{
-					aika: "19:30-20:15",
-					kentta1: "HH vs 100KL",
-					kentta1Voitetut: 0,
-					kentta1Havitut: 0,
-					kentta2: "HNJHN vs VFC",
-					kentta2Voitetut: 0,
-					kentta2Havitut: 0,
-					kentta3: "AAK vs KN",
-					kentta3Voitetut: 0,
-					kentta3Havitut: 0,
-				},
-				{
-					aika: "20:15-21:00",
+					aika: "1. 18:00-18:45",
 					kentta1: "HH vs KN",
 					kentta1Voitetut: 0,
 					kentta1Havitut: 0,
@@ -305,23 +436,11 @@ export default {
 					kentta3Havitut: 0,
 				},
 				{
-					aika: "21:00-21:45",
-					kentta1: "HH vs VFC",
-					kentta1Voitetut: 0,
-					kentta1Havitut: 0,
-					kentta2: "HNJHN vs AAK",
-					kentta2Voitetut: 0,
-					kentta2Havitut: 0,
-					kentta3: "KN vs 100KL",
-					kentta3Voitetut: 0,
-					kentta3Havitut: 0,
-				},
-				{
-					aika: "21:45-22:30",
+					aika: "2. 18:45-19:30",
 					kentta1: "HH vs HNJHN",
 					kentta1Voitetut: 0,
 					kentta1Havitut: 0,
-					kentta2: "AAK vs KN",
+					kentta2: "KN vs AAK",
 					kentta2Voitetut: 0,
 					kentta2Havitut: 0,
 					kentta3: "100KL vs VFC",
@@ -329,31 +448,43 @@ export default {
 					kentta3Havitut: 0,
 				},
 				{
-					aika: "22:30-23:15",
-					kentta1: "HH vs AAK",
-					kentta1Voitetut: 0,
-					kentta1Havitut: 0,
-					kentta2: "HNJHN vs VFC",
-					kentta2Voitetut: 0,
-					kentta2Havitut: 0,
-					kentta3: "KN vs 100KL",
-					kentta3Voitetut: 0,
-					kentta3Havitut: 0,
-				},
-				{
-					aika: "23:15-00:00",
+					aika: "3. 19:30-20:15",
 					kentta1: "HH vs 100KL",
 					kentta1Voitetut: 0,
 					kentta1Havitut: 0,
-					kentta2: "HNJHN vs KN",
+					kentta2: "KN vs VFC",
 					kentta2Voitetut: 0,
 					kentta2Havitut: 0,
-					kentta3: "AAK vs VFC",
+					kentta3: "HNJHN vs AAK",
 					kentta3Voitetut: 0,
 					kentta3Havitut: 0,
 				},
 				{
-					aika: "00:00-00:45",
+					aika: "4. 20:15-21:00",
+					kentta1: "HH vs AAK",
+					kentta1Voitetut: 0,
+					kentta1Havitut: 0,
+					kentta2: "KN vs 100KL",
+					kentta2Voitetut: 0,
+					kentta2Havitut: 0,
+					kentta3: "HNJHN vs VFC",
+					kentta3Voitetut: 0,
+					kentta3Havitut: 0,
+				},
+				{
+					aika: "5. 21:00-21:45",
+					kentta1: "HH vs VFC",
+					kentta1Voitetut: 0,
+					kentta1Havitut: 0,
+					kentta2: "KN vs HNJHN",
+					kentta2Voitetut: 0,
+					kentta2Havitut: 0,
+					kentta3: "100KL vs AAK",
+					kentta3Voitetut: 0,
+					kentta3Havitut: 0,
+				},
+				{
+					aika: "6. 21:45-22:30",
 					kentta1: "HH vs KN",
 					kentta1Voitetut: 0,
 					kentta1Havitut: 0,
@@ -365,141 +496,291 @@ export default {
 					kentta3Havitut: 0,
 				},
 				{
-					aika: "00:45-01:30",
-					kentta1: "HH vs KN",
+					aika: "7. 22:30-23:15",
+					kentta1: "HH vs HNJHN",
 					kentta1Voitetut: 0,
 					kentta1Havitut: 0,
-					kentta2: "HNJHN vs 100KL",
+					kentta2: "KN vs AAK",
 					kentta2Voitetut: 0,
 					kentta2Havitut: 0,
-					kentta3: "AAK vs VFC",
+					kentta3: "100KL vs VFC",
+					kentta3Voitetut: 0,
+					kentta3Havitut: 0,
+				},
+				{
+					aika: "8. 23:15-00:00",
+					kentta1: "HH vs 100KL",
+					kentta1Voitetut: 0,
+					kentta1Havitut: 0,
+					kentta2: "KN vs VFC",
+					kentta2Voitetut: 0,
+					kentta2Havitut: 0,
+					kentta3: "HNJHN vs AAK",
+					kentta3Voitetut: 0,
+					kentta3Havitut: 0,
+				},
+				{
+					aika: "9. 00:00-00:45",
+					kentta1: "HH vs AAK",
+					kentta1Voitetut: 0,
+					kentta1Havitut: 0,
+					kentta2: "KN vs 100KL",
+					kentta2Voitetut: 0,
+					kentta2Havitut: 0,
+					kentta3: "HNJHN vs VFC",
+					kentta3Voitetut: 0,
+					kentta3Havitut: 0,
+				},
+				{
+					aika: "10. 00:45-01:30",
+					kentta1: "HH vs VFC",
+					kentta1Voitetut: 0,
+					kentta1Havitut: 0,
+					kentta2: "KN vs HNJHN",
+					kentta2Voitetut: 0,
+					kentta2Havitut: 0,
+					kentta3: "100KL vs AAK",
 					kentta3Voitetut: 0,
 					kentta3Havitut: 0,
 				},
 			],
-
 			otteluohjelmaLauantai: [
 				{
-					aika: "11:00-11:45",
-					kentta1: "HH vs VFC",
-					kentta1Voitetut: 0,
-					kentta1Havitut: 0,
-					kentta2: "HNJHN vs AAK",
-					kentta2Voitetut: 0,
-					kentta2Havitut: 0,
-					kentta3: "KN vs 100KL",
-					kentta3Voitetut: 0,
-					kentta3Havitut: 0,
-				},
-				{
-					aika: "11:45-12:30",
-					kentta1: "HH vs HNJHN",
-					kentta1Voitetut: 0,
-					kentta1Havitut: 0,
-					kentta2: "AAK vs 100KL",
-					kentta2Voitetut: 0,
-					kentta2Havitut: 0,
-					kentta3: "KN vs VFC",
-					kentta3Voitetut: 0,
-					kentta3Havitut: 0,
-				},
-				{
-					aika: "12:30-13:15",
-					kentta1: "HH vs AAK",
-					kentta1Voitetut: 0,
-					kentta1Havitut: 0,
-					kentta2: "HNJHN vs KN",
-					kentta2Voitetut: 0,
-					kentta2Havitut: 0,
-					kentta3: "100KL vs VFC",
-					kentta3Voitetut: 0,
-					kentta3Havitut: 0,
-				},
-				{
-					aika: "13:15-14:00",
-					kentta1: "HH vs 100KL",
-					kentta1Voitetut: 0,
-					kentta1Havitut: 0,
-					kentta2: "HNJHN vs VFC",
-					kentta2Voitetut: 0,
-					kentta2Havitut: 0,
-					kentta3: "AAK vs KN",
-					kentta3Voitetut: 0,
-					kentta3Havitut: 0,
-				},
-				{
-					aika: "14:00-14:45",
+					aika: "11. 11:00-11:45",
 					kentta1: "HH vs KN",
-					kentta1Voitetut: 0,
-					kentta1Havitut: 0,
 					kentta2: "HNJHN vs 100KL",
 					kentta2Voitetut: 0,
 					kentta2Havitut: 0,
 					kentta3: "AAK vs VFC",
 					kentta3Voitetut: 0,
 					kentta3Havitut: 0,
+					onTulosNakyva: true,
 				},
 				{
-					aika: "14:45-15:30",
-					kentta1: "HH vs VFC",
+					aika: "12. 11:45-12:30",
+					kentta1: "HH vs HNJHN",
 					kentta1Voitetut: 0,
 					kentta1Havitut: 0,
-					kentta2: "HNJHN vs AAK",
+					kentta2: "KN vs AAK",
 					kentta2Voitetut: 0,
 					kentta2Havitut: 0,
-					kentta3: "KN vs 100KL",
+					kentta3: "100KL vs VFC",
 					kentta3Voitetut: 0,
 					kentta3Havitut: 0,
+					onTulosNakyva: true,
 				},
 				{
-					aika: "15:30-16.15",
+					aika: "13. 12:30-13:15",
+					kentta1: "HH vs 100KL",
+					kentta1Voitetut: 0,
+					kentta1Havitut: 0,
+					kentta2: "KN vs VFC",
+					kentta2Voitetut: 0,
+					kentta2Havitut: 0,
+					kentta3: "HNJHN vs AAK",
+					kentta3Voitetut: 0,
+					kentta3Havitut: 0,
+					onTulosNakyva: true,
+				},
+				{
+					aika: "14. 13:15-14:00",
 					kentta1: "HH vs AAK",
 					kentta1Voitetut: 0,
 					kentta1Havitut: 0,
-					kentta2: "HNJHN vs VFC",
+					kentta2: "KN vs 100KL",
 					kentta2Voitetut: 0,
 					kentta2Havitut: 0,
-					kentta3: "KN vs 100KL",
+					kentta3: "HNJHN vs VFC",
 					kentta3Voitetut: 0,
 					kentta3Havitut: 0,
+					onTulosNakyva: true,
+				},
+				{
+					aika: "15. 14:00-14:45",
+					kentta1: "HH vs VFC",
+					kentta1Voitetut: 0,
+					kentta1Havitut: 0,
+					kentta2: "KN vs HNJHN",
+					kentta2Voitetut: 0,
+					kentta2Havitut: 0,
+					kentta3: "100KL vs AAK",
+					kentta3Voitetut: 0,
+					kentta3Havitut: 0,
+					onTulosNakyva: true,
 				},
 				{
 					aika: "16:15-18:15",
-					kentta1: "Runkosarjan 3. vs Runkosarjan 6.",
-					kentta1Voitetut: 0,
-					kentta1Havitut: 0,
-					kentta2: "Runkosarjan 4. vs Runkosarjan 5.",
-					kentta2Voitetut: 0,
-					kentta2Havitut: 0,
+					kentta1: "Q1 | 3. vs 6.",
+					kentta2: "Q2 | 4. vs 5.",
+					onTulosNakyva: false,
 				},
 				{
 					aika: "18:15-20:15",
-					kentta1: "Quarter 1 voittaja vs Runkosarjan 2.",
-					kentta1Voitetut: 0,
-					kentta1Havitut: 0,
-					kentta2: "Quarter 2 voittaja vs Runkosarjan 1.",
-					kentta2Voitetut: 0,
-					kentta2Havitut: 0,
+					kentta1: "Runkosarjan 1. vs Q2",
+					kentta2: "Runkosarjan 2. vs Q1",
+					onTulosNakyva: false,
 				},
 				{
 					aika: "20:15-22:15",
 					kentta1: "FINAALI",
-					kentta1Voitetut: 0,
-					kentta1Havitut: 0,
+					onTulosNakyva: false,
 				},
 			],
 		}
 	},
 	methods: {
-		kirjauduSisaan() {
-			if (this.salasana === "rantanen") {
-				this.onKirjautunut = true
-				this.virhe = ""
-			} else {
-				this.virhe = "Virheellinen salasana!"
+		scrollaaOtteluohjelmaan() {
+			const otteluohjelmaElement = this.$refs.otteluohjelmaSection
+			if (otteluohjelmaElement) {
+				// Alustetaan animaatio
+				const startPosition = window.pageYOffset // Nykyinen sijainti
+				const targetPosition = otteluohjelmaElement.getBoundingClientRect().top // Kohteen sijainti suhteessa ikkunaan
+				const duration = 1000 // Animaation kesto millisekunteina
+				const startTime = performance.now() // Aloitusaika
+
+				const easeInOutCubic = (t) => {
+					// Easing-funktio: pehmeä kiihdytys ja hidastus
+					return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+				}
+
+				const animateScroll = (currentTime) => {
+					const elapsedTime = currentTime - startTime
+					const progress = Math.min(elapsedTime / duration, 1) // Varmistetaan, että arvo ei ylitä 1
+					const easing = easeInOutCubic(progress)
+					const scrollTo = startPosition + targetPosition * easing
+
+					window.scrollTo(0, scrollTo)
+
+					if (progress < 1) {
+						requestAnimationFrame(animateScroll)
+					}
+				}
+
+				requestAnimationFrame(animateScroll)
 			}
 		},
 
+		avaaInfoModal() {
+			this.modalAuki = true
+		},
+		suljeInfoModal() {
+			this.modalAuki = false
+		},
+		avaaModal(joukkueNimi) {
+			this.modalJoukkue = joukkueNimi
+			this.joukkueenPelaajat = this.joukkueetPelaajat[joukkueNimi] || []
+			this.naytaModal = true
+		},
+		suljeModal() {
+			this.naytaModal = false
+			this.modalJoukkue = ""
+			this.joukkueenPelaajat = []
+		},
+
+		kirjauduSisaan() {
+			if (this.salasana === "rantanen") {
+				this.onKirjautunut = true
+				this.virhe = false
+			} else {
+				this.virhe = true
+			}
+		},
+
+		async haeOttelut() {
+			try {
+				const response = await fetch("/api/eratulokset")
+				const data = await response.json()
+
+				if (data.error) {
+					console.error("Virhe ottelutietojen haussa:", data.error)
+					return
+				}
+
+				// Päivitetään otteluohjelman tiedot Vue:ssa
+				this.otteluohjelmaPerjantai.forEach((ottelu) => {
+					const kentta1 = data.find((item) => item.kentta === "kentta1" && item.aika === ottelu.aika)
+					const kentta2 = data.find((item) => item.kentta === "kentta2" && item.aika === ottelu.aika)
+					const kentta3 = data.find((item) => item.kentta === "kentta3" && item.aika === ottelu.aika)
+
+					if (kentta1) {
+						ottelu.kentta1Voitetut = kentta1.joukkue1_voitetut
+						ottelu.kentta1Havitut = kentta1.joukkue2_voitetut
+					}
+					if (kentta2) {
+						ottelu.kentta2Voitetut = kentta2.joukkue1_voitetut
+						ottelu.kentta2Havitut = kentta2.joukkue2_voitetut
+					}
+					if (kentta3) {
+						ottelu.kentta3Voitetut = kentta3.joukkue1_voitetut
+						ottelu.kentta3Havitut = kentta3.joukkue2_voitetut
+					}
+				})
+				this.otteluohjelmaLauantai.forEach((ottelu) => {
+					const kentta1 = data.find((item) => item.kentta === "kentta1" && item.aika === ottelu.aika)
+					const kentta2 = data.find((item) => item.kentta === "kentta2" && item.aika === ottelu.aika)
+					const kentta3 = data.find((item) => item.kentta === "kentta3" && item.aika === ottelu.aika)
+
+					if (kentta1) {
+						ottelu.kentta1Voitetut = kentta1.joukkue1_voitetut
+						ottelu.kentta1Havitut = kentta1.joukkue2_voitetut
+					}
+					if (kentta2) {
+						ottelu.kentta2Voitetut = kentta2.joukkue1_voitetut
+						ottelu.kentta2Havitut = kentta2.joukkue2_voitetut
+					}
+					if (kentta3) {
+						ottelu.kentta3Voitetut = kentta3.joukkue1_voitetut
+						ottelu.kentta3Havitut = kentta3.joukkue2_voitetut
+					}
+				})
+			} catch (error) {
+				console.error("Virhe ottelutietojen haussa:", error)
+			}
+		},
+
+		async tallennaErat(ottelu, voitetut, havitut, index, kenttaKey, ohjelmaTyyppi) {
+			if (!ottelu || typeof voitetut !== "number" || typeof havitut !== "number") {
+				alert("Virhe: Tarkista eräluvut ja ottelutiedot!")
+				return
+			}
+
+			const [joukkue1, joukkue2] = ottelu.split(" vs ")
+			const otteluOhjelma = ohjelmaTyyppi === "lauantai" ? this.otteluohjelmaLauantai : this.otteluohjelmaPerjantai
+			const currentOttelu = otteluOhjelma[index]
+
+			// Tarkistetaan, että `currentOttelu` ja `aika` ovat määritetty
+			if (!currentOttelu || !currentOttelu.aika) {
+				console.error("Ottelua tai aikaa ei löytynyt:", { currentOttelu })
+				alert("Virhe: Ottelutietoja ei löytynyt!")
+				return
+			}
+
+			try {
+				// Lähetetään tiedot API:lle tallennettavaksi
+				const response = await fetch("/api/eratulokset", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						kentta: kenttaKey,
+						aika: currentOttelu.aika,
+						joukkue1Voitetut: voitetut,
+						joukkue2Voitetut: havitut,
+					}),
+				})
+
+				const data = await response.json()
+				if (data.error) {
+					alert(`Virhe: ${data.error}`)
+					return
+				}
+
+				// Päivitetään Vue-tiedot suoraan ilman `$set`
+				currentOttelu[`${kenttaKey}Voitetut`] = voitetut
+				currentOttelu[`${kenttaKey}Havitut`] = havitut
+			} catch (error) {
+				console.error("Virhe erälukujen tallennuksessa:", error)
+			}
+		},
 		async lataaDataJSON() {
 			try {
 				const response = await fetch("/data.json")
@@ -514,42 +795,6 @@ export default {
 			} catch (error) {
 				console.error("Tietojen lataaminen epäonnistui:", error)
 			}
-		},
-
-		laskeErat(joukkue) {
-			let voitot = 0
-			let havitot = 0
-
-			// Laske Perjantain ottelut
-			this.otteluohjelmaPerjantai.forEach((ottelu) => {
-				if (ottelu.kentta1.includes(joukkue)) {
-					const erienTiedot = this.haeErat(joukkue, ottelu.kentta1, ottelu.kentta1Voitetut, ottelu.kentta1Havitut)
-					voitot += erienTiedot.voitetut
-					havitot += erienTiedot.havitut
-				}
-				if (ottelu.kentta2.includes(joukkue)) {
-					const erienTiedot = this.haeErat(joukkue, ottelu.kentta2, ottelu.kentta2Voitetut, ottelu.kentta2Havitut)
-					voitot += erienTiedot.voitetut
-					havitot += erienTiedot.havitut
-				}
-				if (ottelu.kentta3.includes(joukkue)) {
-					const erienTiedot = this.haeErat(joukkue, ottelu.kentta3, ottelu.kentta3Voitetut, ottelu.kentta3Havitut)
-					voitot += erienTiedot.voitetut
-					havitot += erienTiedot.havitut
-				}
-			})
-
-			return `${voitot}-${havitot}`
-		},
-		haeErat(joukkue, ottelu, voitetut, havitut) {
-			const [joukkue1, joukkue2] = ottelu.split(" vs ")
-			if (joukkue === joukkue1) {
-				return { voitetut, havitut }
-			}
-			if (joukkue === joukkue2) {
-				return { voitetut: havitut, havitut: voitetut }
-			}
-			return { voitetut: 0, havitut: 0 }
 		},
 
 		async lisaaTulos(tulos, maara) {
@@ -667,15 +912,32 @@ export default {
 		await this.lataaDataJSON()
 		await this.paivitaSarjataulukko()
 		await this.haePelaajat()
+		await this.haeOttelut()
 	},
 }
 </script>
 
 <style>
+.modal-enter-active,
+.modal-leave-active {
+	transition: all 0.3s ease;
+}
+.modal-enter-from,
+.modal-leave-to {
+	opacity: 1;
+	transform: scale(0.9);
+}
+.modal-enter-to,
+.modal-leave-from {
+	opacity: 1;
+	transform: scale(1);
+}
 table {
 	width: 80%;
 	border-collapse: collapse;
 	margin: 20px 0;
+	width: 100%;
+	border-collapse: collapse;
 }
 th,
 td {
