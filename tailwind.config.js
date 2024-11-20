@@ -15,8 +15,14 @@ module.exports = {
         smoke: '#282828', // Elementti
         lightSmoke: '#3F3F3F', // Kevyempi harmaa
         pig: '#3f3f3f', // Korostus tms. pig nimi jäi aiemmasta pinkistä väristä
-        gold: '#FFD700'
-
+        gold: '#FFD700',
+        cloud: '#8b8b8b',
+        white: '#ECECEC',
+      },
+      fontFamily: {
+        sans: ['ui-sans-serif', 'system-ui'], // Muuta tähän valitsemasi fontti
+        serif: ['ui-serif', 'Georgia'],      // Vaihtoehtoisesti serif
+        mono: ['ui-monospace', 'SFMono-Regular'], // Tai monospace
       },
     },
     plugins: [],

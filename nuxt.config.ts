@@ -1,7 +1,11 @@
 // nuxt.config.ts
 export default defineNuxtConfig({
   // Lisää Tailwind CSS tähän
-  css: ['@/assets/css/tailwind.css'],
+  css: [
+    '~/assets/css/main.css', // Oma CSS-tiedostosi
+    '~/assets/css/tailwind.css', // Tailwindin CSS
+  ],
+
 
   postcss: {
     plugins: {
