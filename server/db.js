@@ -1,6 +1,12 @@
 import Database from "better-sqlite3"
 const db = new Database("tournament-official.db")
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS tiedot (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    teksti TEXT NOT NULL
+  )
+`)
 // Luodaan sarjataulukko, jos sitä ei ole olemassa
 db.exec(`
   CREATE TABLE IF NOT EXISTS sarjataulukko (
@@ -15,7 +21,7 @@ db.exec(`
 // Alustetaan sarjataulukon data
 const stmtSarjataulukko = db.prepare("SELECT COUNT(*) as count FROM sarjataulukko")
 if (stmtSarjataulukko.get().count === 0) {
-	db.exec(`
+  db.exec(`
     INSERT INTO sarjataulukko (nimi) VALUES 
     ('HH'), ('HNJHN'), ('AAK'), ('100KL'), ('KN'), ('VFC')
   `)
@@ -35,7 +41,7 @@ db.exec(`
 // Alustetaan pelaajat-taulukon data
 const stmtPelaajat = db.prepare("SELECT COUNT(*) as count FROM pelaajat")
 if (stmtPelaajat.get().count === 0) {
-	db.exec(`
+  db.exec(`
     INSERT INTO pelaajat (nimi) VALUES 
     ('Mussu'), ('Joge'), ('VerdiH'), ('Radu'), ('nico_ilari'), ('tenho'), ('heGe'), 
     ('wiilis'), ('pantsi'), ('ZzeiT'), ('Perä_carry'), ('-Pule'), ('JerDAD'), ('vedivaan'), 
@@ -59,7 +65,7 @@ db.exec(`
 
 const stmtOttelut = db.prepare("SELECT COUNT(*) as count FROM ottelut")
 if (stmtOttelut.get().count === 0) {
-	db.exec(`
+  db.exec(`
         INSERT INTO ottelut (aika, kentta, joukkue1, joukkue2) VALUES
         -- Perjantai ottelut
         ('1. 18:00-18:45', 'kentta1', 'HH', 'KN'),

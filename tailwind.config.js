@@ -18,6 +18,7 @@ module.exports = {
         gold: '#FFD700',
         cloud: '#8b8b8b',
         white: '#ECECEC',
+        cta: '#FF6347'
       },
       fontFamily: {
         sans: ['ui-sans-serif', 'system-ui'], // Muuta tähän valitsemasi fontti
