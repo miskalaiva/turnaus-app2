@@ -1,28 +1,32 @@
 <template>
   <div class="bg-coal text-lg">
     <div class="flex flex-col items-center justify-center py-6">
-      <div class="container flex items-center justify-between -mb-5">
+      <div>
+        <h1 class="text-4xl text-center text-white shadow-lg">Ranuan Kummit CS2-turnaus</h1>
+      </div>
+      <div class="mt-8 gap-y-4 items-center justify-between -mb-5">
         <div>
-          <h1 class="text-4xl text-white shadow-lg">Ranuan Kummit CS2-turnaus</h1>
-        </div>
-        <div>
-          <button class="text-cta px-4 py-1 mr-4 border border-pig hover:bg-lightSmoke" @click="avaaInfoModal">Turnausinfo</button>
-        </div>
-        <div v-if="!onKirjautunut" class="text-white">
-          <label for="salasana" class="mr-2"></label>
-          <input
-            id="salasana"
-            v-model="salasana"
-            placeholder="Anna salasana"
-            type="password"
-            class="px-2 py-1 rounded-md border border-pig bg-smoke max-w-44"
-            :class="virhe ? 'border-red-500' : 'border-pig'"
-          />
-          <button class="ml-4 text-cta px-4 py-1 border border-pig hover:bg-lightSmoke" @click="kirjauduSisaan">Kirjaudu</button>
+          <div v-if="!onKirjautunut" class="text-white">
+            <label for="salasana"></label>
+            <input
+              id="salasana"
+              v-model="salasana"
+              placeholder="Anna salasana"
+              type="password"
+              class="px-2 py-1 rounded-md border border-pig bg-smoke max-w-44 mb-4"
+              :class="virhe ? 'border-red-500' : 'border-pig'"
+            />
+            <button class="text-cta ml-2 px-4 py-1 border border-pig hover:bg-lightSmoke" @click="kirjauduSisaan">Kirjaudu</button>
+          </div>
         </div>
       </div>
     </div>
 
+    <!--
+    <div class="container text-center">
+      <button class="text-cta mt-6 mb-4 px-4 py-1 mr-4 border border-pig hover:bg-lightSmoke" @click="avaaInfoModal">Turnausinfo</button>
+    </div>
+    -->
     <!-- Turnausinfo modal -->
     <transition appear name="modal">
       <div v-if="modalAuki" class="fixed inset-0 flex justify-center items-center">
@@ -41,23 +45,56 @@
     </transition>
 
     <div class="container py-6">
-      <div class="mb-6 bg-smoke">
+      <div class="mb-6">
         <section class="text-white px-8 py-6 flex flex-col items-center">
           <div>
             <div class="flex justify-between items-center">
-              <h2 class="text-2xl">Sarjataulukko</h2>
-              <button class="px-4 py-2 border border-pig hover:bg-lightSmoke text-cta bg-coal" @click="scrollaaOtteluohjelmaan">Tästä otteluohjelmaan</button>
+              <h2 class="text-xl md:text-2xl">Sarjataulukko</h2>
+              <button class="px-4 py-2 border border-pig hover:bg-lightSmoke text-cta bg-coal ml-2" @click="scrollaaOtteluohjelmaan">Otteluohjelma</button>
             </div>
             <table class="mb-0 pb-0 border border-pig w-full">
               <thead class="border border-pig">
                 <tr>
                   <th class="border-pig bg-smoke">Joukkue</th>
-                  <th class="border-pig bg-smoke">Voitot</th>
-                  <th class="border-pig bg-smoke">Tasapelit</th>
-                  <th class="border-pig bg-smoke">Häviöt</th>
-                  <th class="border-pig bg-smoke">Pisteet</th>
+
+                  <th class="border-pig bg-smoke relative group">
+                    V
+                    <span
+                      class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max max-w-xs rounded bg-black text-white text-sm px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50"
+                    >
+                      Voitto
+                    </span>
+                  </th>
+
+                  <th class="border-pig bg-smoke relative group">
+                    T
+                    <span
+                      class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max max-w-xs rounded bg-black text-white text-sm px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50"
+                    >
+                      Tasapeli
+                    </span>
+                  </th>
+
+                  <th class="border-pig bg-smoke relative group">
+                    H
+                    <span
+                      class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max max-w-xs rounded bg-black text-white text-sm px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50"
+                    >
+                      Häviö
+                    </span>
+                  </th>
+
+                  <th class="border-pig bg-smoke relative group">
+                    P
+                    <span
+                      class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max max-w-xs rounded bg-black text-white text-sm px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50"
+                    >
+                      Pisteet
+                    </span>
+                  </th>
                 </tr>
               </thead>
+
               <tbody>
                 <tr class="border-pig" v-for="joukkue in sarjataulukko" :key="joukkue.nimi" @click="avaaModal(joukkue.nimi)">
                   <td class="border-pig cursor-pointer hover:bg-lightSmoke text-left pl-8 w-2/12">{{ joukkue.nimi }}</td>
@@ -97,10 +134,12 @@
             <!-- Modal for showing team players -->
             <transition appear name="modal">
               <div v-if="naytaModal" class="fixed inset-0 flex items-center justify-center">
-                <div class="bg-coal text-white p-12 rounded-md shadow-xl shadow-black w-1/3">
-                  <h3 class="text-xl font-bold mb-4">Joukkueen {{ modalJoukkue }} pelaajat</h3>
+                <div class="bg-coal text-white p-12 rounded-md shadow-xl shadow-black w-3/4 md:w-1/4">
+                  <h3 class="text-xl font-bold mb-4">
+                    Joukkueen <span class="text-cta">{{ modalJoukkue }}</span> pelaajat
+                  </h3>
                   <ul>
-                    <li class="text-xl mb-2" v-for="pelaaja in joukkueenPelaajat" :key="pelaaja">{{ pelaaja }}</li>
+                    <li class="text-xl text-cta mb-2" v-for="pelaaja in joukkueenPelaajat" :key="pelaaja">{{ pelaaja }}</li>
                   </ul>
                   <button class="mt-6 px-4 py-2 border border-pig hover:bg-lightSmoke text-cta" @click="suljeModal">Sulje</button>
                 </div>
@@ -110,22 +149,55 @@
         </section>
       </div>
 
-      <section class="bg-smoke text-white px-8 py-6 flex flex-col items-center">
+      <section class="text-white px-8 py-6 flex flex-col items-center">
         <div>
-          <h2 class="text-2xl mb-4">Tilastot</h2>
+          <h2 class="mb-4 text-xl md:text-2xl">Tilastot</h2>
           <table class="border-pig w-full">
             <thead class="border-pig">
               <tr>
                 <th class="border-pig bg-smoke">Pelaaja</th>
-                <th class="border-pig bg-smoke">K</th>
-                <th class="border-pig bg-smoke">D</th>
-                <th class="border-pig bg-smoke">A</th>
-                <th class="border-pig bg-smoke">K/D Ratio</th>
+
+                <th class="border-pig bg-smoke relative group">
+                  K
+                  <span
+                    class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max max-w-xs rounded bg-black text-white text-xs px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50"
+                  >
+                    Kill
+                  </span>
+                </th>
+
+                <th class="border-pig bg-smoke relative group">
+                  D
+                  <span
+                    class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max max-w-xs rounded bg-black text-white text-sm px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50"
+                  >
+                    Death
+                  </span>
+                </th>
+
+                <th class="border-pig bg-smoke relative group">
+                  A
+                  <span
+                    class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max max-w-xs rounded bg-black text-white text-sm px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50"
+                  >
+                    Assist
+                  </span>
+                </th>
+
+                <th class="border-pig bg-smoke relative group">
+                  K/D Ratio
+                  <span
+                    class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max max-w-xs rounded bg-black text-white text-sm px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50"
+                  >
+                    Kill / Death Ratio
+                  </span>
+                </th>
               </tr>
             </thead>
+
             <tbody>
-              <tr class="border-pig" v-for="(pelaaja, index) in pelaajat" :key="pelaaja.nimi">
-                <td class="text-left pl-6 w-3/12 border-pig" :class="{ 'flame-effect': index < 5 }">{{ pelaaja.nimi }}</td>
+              <tr class="border-pig px-12" v-for="(pelaaja, index) in pelaajat" :key="pelaaja.nimi">
+                <td class="w-3/12 text-left border-pig whitespace-nowrap" :class="{ 'flame-effect': index < 5 }">{{ index + 1 }}. {{ pelaaja.nimi }}</td>
                 <td class="border-pig w-3/12">{{ pelaaja.kill }}</td>
                 <td class="border-pig w-3/12">{{ pelaaja.death }}</td>
                 <td class="border-pig w-3/12">{{ pelaaja.assist }}</td>
@@ -134,7 +206,7 @@
             </tbody>
           </table>
           <!--Tässä teksti siksi, että taulukko olis yhtä leveä ko ylempi taulukko. En jaksanu alkaa tyylittelemään nii käytän tämmöstä häksiä-->
-          <p class="italic m-0 p-0 text-sm text-smoke">Klikkaamalla sarjataulukossa joukkueen nimeä voit tarkastella joukkueen kokoonpanoa.</p>
+          <p class="italic m-0 p-0 text-sm text-coal">Klikkaamalla sarjataulukossa joukkueen nimeä voit tarkastella joukkueen kokoonpanoa.</p>
           <div v-if="onKirjautunut">
             <div class="pb-2">
               <label for="pelaaja" class="mr-2">Päivitä pelaajan</label>
@@ -167,10 +239,10 @@
         </div>
       </section>
     </div>
-    <div class="container">
-      <section ref="otteluohjelmaSection" class="bg-smoke text-white px-8 py-6 flex flex-col items-center">
+    <div>
+      <section ref="otteluohjelmaSection" class="text-white px-8 py-6 flex flex-col items-center">
         <div>
-          <h2 class="text-2xl">Otteluohjelma</h2>
+          <h2 class="text-xl md:text-2xl">Otteluohjelma</h2>
           <p class="mt-6 -mb-4">Perjantai 22.11.2024</p>
           <table class="border border-pig w-full">
             <thead class="border border-pig">
@@ -182,9 +254,9 @@
               </tr>
             </thead>
             <tbody>
-              <tr class="border-pig bg-smoke" v-for="(ottelu, index) in otteluohjelmaPerjantai" :key="index">
-                <td class="border-pig bg-smoke">{{ ottelu.aika }}</td>
-                <td class="border-pig bg-smoke">
+              <tr class="border-pig" v-for="(ottelu, index) in otteluohjelmaPerjantai" :key="index">
+                <td class="border-pig">{{ ottelu.aika }}</td>
+                <td class="border-pig">
                   <span>{{ ottelu.kentta1 }}</span>
                   <p v-if="ottelu.kentta1Voitetut !== null && ottelu.kentta1Havitut !== null" class="mt-1">{{ ottelu.kentta1Voitetut }} - {{ ottelu.kentta1Havitut }}</p>
                   <div v-if="onKirjautunut">
@@ -196,7 +268,7 @@
                     </button>
                   </div>
                 </td>
-                <td class="border-pig bg-smoke">
+                <td class="border-pig">
                   <span>{{ ottelu.kentta2 }}</span>
                   <p v-if="ottelu.kentta2Voitetut !== null && ottelu.kentta2Havitut !== null" class="mt-1">{{ ottelu.kentta2Voitetut }} - {{ ottelu.kentta2Havitut }}</p>
                   <div v-if="onKirjautunut">
@@ -208,7 +280,7 @@
                     </button>
                   </div>
                 </td>
-                <td class="border-pig bg-smoke">
+                <td class="border-pig">
                   <span>{{ ottelu.kentta3 }}</span>
                   <p v-if="ottelu.kentta3Voitetut !== null && ottelu.kentta3Havitut !== null" class="mt-1">{{ ottelu.kentta3Voitetut }} - {{ ottelu.kentta3Havitut }}</p>
                   <div v-if="onKirjautunut">
@@ -228,9 +300,9 @@
                     <h2 class="text-lg font-bold mb-4">Muokkaa tuloksia</h2>
                     <p>{{ valittuKentta }}</p>
                     <div class="flex items-center mb-4">
-                      <input type="number" class="w-12 mr-2 px-1 py-1 border border-pig rounded-md bg-smoke" v-model.number="modalData.voitetut" placeholder="0" />
+                      <input type="number" class="w-12 mr-2 px-1 py-1 border border-pig rounded-md" v-model.number="modalData.voitetut" placeholder="0" />
                       -
-                      <input type="number" class="w-12 ml-2 px-1 py-1 border border-pig rounded-md bg-smoke" v-model.number="modalData.havitut" placeholder="0" />
+                      <input type="number" class="w-12 ml-2 px-1 py-1 border border-pig rounded-md" v-model.number="modalData.havitut" placeholder="0" />
                     </div>
                     <div class="flex justify-end gap-4">
                       <button class="mt-6 px-4 py-2 bg-white text-cta border border-pig" @click="suljeTulosModal">Peruuta</button>
@@ -242,7 +314,7 @@
             </tbody>
           </table>
           <!--Tässä teksti siksi, että taulukko olis yhtä leveä ko ylempi taulukko. En jaksanu alkaa tyylittelemään nii käytän tämmöstä häksiä-->
-          <p class="italic m-0 p-0 text-sm mb-4 text-smoke">Klikkaamalla sarjataulukossa joukkueen nimeä voit tarkastella joukkueen kokoonpanoa.</p>
+          <p class="italic m-0 p-0 text-sm mb-4 text-coal">Klikkaamalla sarjataulukossa joukkueen nimeä voit tarkastella joukkueen kokoonpanoa.</p>
           <p class="mt-0 -mb-4">Lauantai 23.11.2024</p>
           <table class="border border-pig w-full">
             <thead class="border border-pig">
@@ -254,9 +326,9 @@
               </tr>
             </thead>
             <tbody>
-              <tr class="border-pig bg-smoke" v-for="(ottelu, index) in otteluohjelmaLauantai" :key="index">
-                <td class="border-pig bg-smoke">{{ ottelu.aika }}</td>
-                <td class="border-pig bg-smoke">
+              <tr class="border-pig" v-for="(ottelu, index) in otteluohjelmaLauantai" :key="index">
+                <td class="border-pig">{{ ottelu.aika }}</td>
+                <td class="border-pig">
                   <span>{{ ottelu.kentta1 }}</span>
                   <p v-if="ottelu.kentta1Voitetut !== null && ottelu.kentta1Havitut !== null" class="mt-1">{{ ottelu.kentta1Voitetut }} - {{ ottelu.kentta1Havitut }}</p>
                   <div v-if="ottelu.onTulosNakyva && onKirjautunut">
@@ -268,7 +340,7 @@
                     </button>
                   </div>
                 </td>
-                <td class="border-pig bg-smoke">
+                <td class="border-pig">
                   <span>{{ ottelu.kentta2 }}</span>
                   <p v-if="ottelu.kentta2Voitetut !== null && ottelu.kentta2Havitut !== null" class="mt-1">{{ ottelu.kentta2Voitetut }} - {{ ottelu.kentta2Havitut }}</p>
                   <div v-if="ottelu.onTulosNakyva && onKirjautunut">
@@ -280,7 +352,7 @@
                     </button>
                   </div>
                 </td>
-                <td class="border-pig bg-smoke">
+                <td class="border-pig">
                   <span>{{ ottelu.kentta3 }}</span>
                   <p v-if="ottelu.kentta3Voitetut !== null && ottelu.kentta3Havitut !== null" class="mt-1">{{ ottelu.kentta3Voitetut }} - {{ ottelu.kentta3Havitut }}</p>
                   <div v-if="ottelu.onTulosNakyva && onKirjautunut">
@@ -296,11 +368,11 @@
             </tbody>
           </table>
           <!--Tässä teksti siksi, että taulukko olis yhtä leveä ko ylempi taulukko. En jaksanu alkaa tyylittelemään nii käytän tämmöstä häksiä-->
-          <p class="italic m-0 p-0 text-sm mb-4 text-smoke">Klikkaamalla sarjataulukossa joukkueen nimeä voit tarkastella joukkueen kokoonpanoa.</p>
+          <p class="italic m-0 p-0 text-sm mb-4 text-coal">Klikkaamalla sarjataulukossa joukkueen nimeä voit tarkastella joukkueen kokoonpanoa.</p>
         </div>
       </section>
 
-      <section class="flex flex-col items-center text-white px-8 py-6 bg-smoke">
+      <section class="flex flex-col items-center text-white px-8 py-6">
         <h2 class="text-4xl mb-4">Jatkopelit</h2>
 
         <!-- Näytetään tallennetut tiedot -->
